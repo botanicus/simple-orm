@@ -13,6 +13,8 @@ class SimpleORM
 
     def self.get(key)
       raw_values = SimpleORM.redis.hgetall(key)
+      return if raw_values.empty?
+
       values = raw_values.reduce(Hash.new) do |values, (key, raw_value)|
         values.merge(key.to_sym => begin
           attribute = self.presenter.attributes[key.to_sym]

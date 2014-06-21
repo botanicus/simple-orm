@@ -86,12 +86,16 @@ class SimpleORM
       @hooks[name] && @instance.instance_eval(&@hooks[name])
     end
 
+    def set!(value)
+      @value = value
+    end
+
     def set(value)
       if self.private?
         raise "Attribute #{@name} is private!"
       end
 
-      @value = value
+      self.set!(value)
     end
 
     def get(stage = nil)
@@ -138,7 +142,7 @@ class SimpleORM
           raise ArgumentError.new("No such attribute: #{key}")
         end
 
-        attribute.set(value)
+        attribute.set!(value)
       end
     end
 

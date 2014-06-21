@@ -29,9 +29,9 @@ describe SimpleORM::DB do
       end
   end
 
-  def userModel(presenter)
+  def userModel(user_presenter)
     Class.new(SimpleORM::DB) do
-      presenter presenter
+      presenter user_presenter
 
       def key
         "users.#{self.presenter.username}"
@@ -79,16 +79,34 @@ describe SimpleORM::DB do
 
     describe '.get' do
       it 'returns an object with all the values set up if there is such object' do
-        user = userModel(userPresenter).new(username: 'botanicus')
-        p user.key
+        model = userModel(userPresenter)
+        user = model.new(username: 'botanicus', extra: {a: 1, b: 'test'})
         user.save
 
-        p SimpleORM::DB.get(user.key)
+        retrieved_values = model.get(user.key).values
+        expect(retrieved_values.keys).to include(:extra)
+
+        # JSON doesn't have symbols, so those are converted to strings.
+        expect(retrieved_values[:extra]).to eq('a' => 1, 'b' => 'test')
       end
 
-      it 'returns nil if there is no such object'
+      it 'returns nil if there is no such object' do
+        expect(userModel(userPresenter).get('users:404')).to be(nil)
+      end
 
-      it 'properly deserialises all the attributes'
+      it 'properly deserialises all the attributes' do
+        model = userModel(userPresenter)
+        user = model.new(username: 'botanicus')
+        user.save
+
+        retrieved_values = model.get(user.key).values
+        expect(retrieved_values.keys.sort).to eq([:auth_key, :created_at, :email, :username])
+
+        expect(retrieved_values[:auth_key]).to eq('5c71036005ed1b7abe40ac4a4082db6d')
+        expect(retrieved_values[:created_at]).to eq(Time.at(1403347217))
+        expect(retrieved_values[:email]).to eq('botanicus@101ideas.cz')
+        expect(retrieved_values[:username]).to eq('botanicus')
+      end
     end
   end
 end
