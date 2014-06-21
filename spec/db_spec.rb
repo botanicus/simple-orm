@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'ppt/db'
+require 'simple-orm/db'
 
-describe PPT::DB do
+describe SimpleORM::DB do
   let(:redis) { Redis.new(driver: :hiredis) }
 
   before(:each) do
@@ -9,7 +9,7 @@ describe PPT::DB do
     Time.stub(:now) { Time.at(1403347217) }
   end
 
-  describe PPT::DB::Entity do
+  describe SimpleORM::DB::Entity do
     let(:subclass) do
       Class.new(described_class) do |klass|
         attribute(:id).required
@@ -18,7 +18,7 @@ describe PPT::DB do
     end
   end
 
-  describe PPT::DB::User do
+  describe SimpleORM::DB::User do
     subject { described_class.new(attrs) }
 
     let(:attrs) {{
@@ -49,7 +49,7 @@ describe PPT::DB do
     end
   end
 
-  describe PPT::DB::Developer do
+  describe SimpleORM::DB::Developer do
     subject { described_class.new(attrs) }
 
     let(:attrs) {{
@@ -78,7 +78,7 @@ describe PPT::DB do
     end
   end
 
-  describe PPT::DB::Story do
+  describe SimpleORM::DB::Story do
     subject { described_class.new(attrs) }
 
     let(:attrs) {{

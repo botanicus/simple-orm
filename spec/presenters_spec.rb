@@ -1,8 +1,8 @@
 require 'spec_helper'
-require 'ppt/presenters'
+require 'simple-orm/presenters'
 
-describe PPT::Presenters do
-  describe PPT::Presenters::Entity do
+describe SimpleORM::Presenters do
+  describe SimpleORM::Presenters::Entity do
     let(:subclass) do
       Class.new(described_class) do |klass|
         attribute(:id).required
@@ -12,9 +12,9 @@ describe PPT::Presenters do
 
     describe '#validate' do
       it 'throws an error if whatever has been specified as required is missing' do
-        expect { subclass.new.validate }.to raise_error(PPT::Presenters::ValidationError)
-        expect { subclass.new(Hash.new).validate }.to raise_error(PPT::Presenters::ValidationError)
-        expect { subclass.new(username: 'botanicus').validate }.to raise_error(PPT::Presenters::ValidationError)
+        expect { subclass.new.validate }.to raise_error(SimpleORM::Presenters::ValidationError)
+        expect { subclass.new(Hash.new).validate }.to raise_error(SimpleORM::Presenters::ValidationError)
+        expect { subclass.new(username: 'botanicus').validate }.to raise_error(SimpleORM::Presenters::ValidationError)
       end
 
       it 'throws an error if there are any extra arguments' do
@@ -52,7 +52,7 @@ describe PPT::Presenters do
     end
   end
 
-  describe PPT::Presenters::User do
+  describe SimpleORM::Presenters::User do
     let(:attrs) {{
       service: 'pt',
       username: 'ppt',
@@ -63,22 +63,22 @@ describe PPT::Presenters do
 
     it 'raises an exception if service is missing' do
       instance = described_class.new(attrs.reject { |key, value| key == :service })
-      expect { instance.validate }.to raise_error(PPT::Presenters::ValidationError)
+      expect { instance.validate }.to raise_error(SimpleORM::Presenters::ValidationError)
     end
 
     it 'raises an exception if username is missing' do
       instance = described_class.new(attrs.reject { |key, value| key == :username })
-      expect { instance.validate }.to raise_error(PPT::Presenters::ValidationError)
+      expect { instance.validate }.to raise_error(SimpleORM::Presenters::ValidationError)
     end
 
     it 'raises an exception if name is missing' do
       instance = described_class.new(attrs.reject { |key, value| key == :name })
-      expect { instance.validate }.to raise_error(PPT::Presenters::ValidationError)
+      expect { instance.validate }.to raise_error(SimpleORM::Presenters::ValidationError)
     end
 
     it 'raises an exception if email is missing' do
       instance = described_class.new(attrs.reject { |key, value| key == :email })
-      expect { instance.validate }.to raise_error(PPT::Presenters::ValidationError)
+      expect { instance.validate }.to raise_error(SimpleORM::Presenters::ValidationError)
     end
 
     it 'returns a valid presenter if all the required arguments have been provided' do
@@ -86,7 +86,7 @@ describe PPT::Presenters do
     end
   end
 
-  describe PPT::Presenters::Developer do
+  describe SimpleORM::Presenters::Developer do
     let(:attrs) {{
       company: 'ppt',
       username: 'botanicus',
@@ -96,22 +96,22 @@ describe PPT::Presenters do
 
     it 'raises an exception if company is missing' do
       instance = described_class.new(attrs.reject { |key, value| key == :company })
-      expect { instance.validate }.to raise_error(PPT::Presenters::ValidationError)
+      expect { instance.validate }.to raise_error(SimpleORM::Presenters::ValidationError)
     end
 
     it 'raises an exception if username is missing' do
       instance = described_class.new(attrs.reject { |key, value| key == :username })
-      expect { instance.validate }.to raise_error(PPT::Presenters::ValidationError)
+      expect { instance.validate }.to raise_error(SimpleORM::Presenters::ValidationError)
     end
 
     it 'raises an exception if name is missing' do
       instance = described_class.new(attrs.reject { |key, value| key == :name })
-      expect { instance.validate }.to raise_error(PPT::Presenters::ValidationError)
+      expect { instance.validate }.to raise_error(SimpleORM::Presenters::ValidationError)
     end
 
     it 'raises an exception if email is missing' do
       instance = described_class.new(attrs.reject { |key, value| key == :email })
-      expect { instance.validate }.to raise_error(PPT::Presenters::ValidationError)
+      expect { instance.validate }.to raise_error(SimpleORM::Presenters::ValidationError)
     end
 
     it 'returns a valid presenter if all the required arguments have been provided' do
@@ -119,7 +119,7 @@ describe PPT::Presenters do
     end
   end
 
-  describe PPT::Presenters::Story do
+  describe SimpleORM::Presenters::Story do
     let(:attrs) {{
       company: 'ppt',
       id: 957456,
@@ -131,32 +131,32 @@ describe PPT::Presenters do
 
     it 'raises an exception if company is missing' do
       instance = described_class.new(attrs.reject { |key, value| key == :company })
-      expect { instance.validate }.to raise_error(PPT::Presenters::ValidationError)
+      expect { instance.validate }.to raise_error(SimpleORM::Presenters::ValidationError)
     end
 
     it 'raises an exception if id is missing' do
       instance = described_class.new(attrs.reject { |key, value| key == :id })
-      expect { instance.validate }.to raise_error(PPT::Presenters::ValidationError)
+      expect { instance.validate }.to raise_error(SimpleORM::Presenters::ValidationError)
     end
 
     it 'raises an exception if title is missing' do
       instance = described_class.new(attrs.reject { |key, value| key == :title })
-      expect { instance.validate }.to raise_error(PPT::Presenters::ValidationError)
+      expect { instance.validate }.to raise_error(SimpleORM::Presenters::ValidationError)
     end
 
     it 'raises an exception if price is missing' do
       instance = described_class.new(attrs.reject { |key, value| key == :price })
-      expect { instance.validate }.to raise_error(PPT::Presenters::ValidationError)
+      expect { instance.validate }.to raise_error(SimpleORM::Presenters::ValidationError)
     end
 
     it 'raises an exception if currency is missing' do
       instance = described_class.new(attrs.reject { |key, value| key == :currency })
-      expect { instance.validate }.to raise_error(PPT::Presenters::ValidationError)
+      expect { instance.validate }.to raise_error(SimpleORM::Presenters::ValidationError)
     end
 
     it 'raises an exception if link is missing' do
       instance = described_class.new(attrs.reject { |key, value| key == :link })
-      expect { instance.validate }.to raise_error(PPT::Presenters::ValidationError)
+      expect { instance.validate }.to raise_error(SimpleORM::Presenters::ValidationError)
     end
 
     it 'returns a valid presenter if all the required arguments have been provided' do

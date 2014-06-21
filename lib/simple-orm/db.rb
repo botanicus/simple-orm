@@ -1,7 +1,7 @@
 require 'redis'
-require 'ppt/presenters'
+require 'simple-orm/presenters'
 
-class PPT
+class SimpleORM
   module DB
     def self.redis
       @redis ||= Redis.new(driver: :hiredis)
@@ -29,32 +29,8 @@ class PPT
       def save
         stage = self.new_record? ? :create : :update
         self.values(stage).each do |key, value|
-          PPT::DB.redis.hset(self.key, key, value)
+          SimpleORM::DB.redis.hset(self.key, key, value)
         end
-      end
-    end
-
-    class User < Entity
-      presenter PPT::Presenters::User
-
-      def key
-        "users.#{@presenter.username}"
-      end
-    end
-
-    class Developer < Entity
-      presenter PPT::Presenters::Developer
-
-      def key
-        "devs.#{@presenter.company}.#{@presenter.username}"
-      end
-    end
-
-    class Story < Entity
-      presenter PPT::Presenters::Story
-
-      def key
-        "stories.#{@presenter.company}.#{@presenter.id}"
       end
     end
   end

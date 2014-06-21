@@ -1,7 +1,7 @@
 require 'json'
-require 'ppt/extensions'
+require 'simple-orm/extensions'
 
-class PPT
+class SimpleORM
   module Presenters
     class ValidationError < ::StandardError
     end
@@ -113,7 +113,7 @@ class PPT
       def initialize(values = Hash.new)
         # Let's consider it safe since this is not user input.
         # It might not be the best idea, but for now, who cares.
-        values = PPT.symbolise_keys(values)
+        values = SimpleORM.symbolise_keys(values)
 
         values.each do |key, value|
           unless attribute = self.attributes[key]
