@@ -44,8 +44,13 @@ class SimpleORM
       self
     end
 
-    def convert(&block)
-      @converter = block
+    def deserialise(&block)
+      @deserialiser = block
+      self
+    end
+
+    def serialise(&block)
+      @serialiser = block
       self
     end
 
@@ -67,6 +72,14 @@ class SimpleORM
     # API
     def private?
       @private
+    end
+
+    def deserialise!
+      @deserialiser && self.set(@deserialiser.call(self.get))
+    end
+
+    def serialise!
+      @serialiser && @serialiser.call(self.get)
     end
 
     def run_hook(name)

@@ -50,7 +50,7 @@ describe 'a presenter' do
   end
 
   describe '#to_json' do
-    it 'converts #values to JSON' do
+    it 'deserialises #values to JSON' do
       instance = UserPresenter.new(id: 1, username: 'botanicus')
       expect(instance.to_json).to eq('{"id":1,"username":"botanicus"}')
     end

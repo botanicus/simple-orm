@@ -16,12 +16,16 @@ class PPT
       attribute(:auth_key).private.default { SecureRandom.hex }
 
       attribute(:created_at).
-        convert { |data| Time.at(data) }.
+        deserialise { |data| Time.at(data.to_i) }.
         on_create { Time.now.utc.to_i }
 
       attribute(:updated_at).
-        convert { |data| Time.at(data) }.
+        deserialise { |data| Time.at(data.to_i) }.
         on_update { Time.now.utc.to_i }
+
+      attribute(:extra).
+        deserialise { |data| JSON.parse(data) }.
+          serialise { |value| value.to_json }
     end
   end
 
