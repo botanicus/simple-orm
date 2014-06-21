@@ -42,10 +42,10 @@ class SimpleORM
 
     def save
       stage = self.new_record? ? :create : :update
-      self.values(stage).each do |key, _|
-        value = self.presenter.attributes[key].serialise_value
-        SimpleORM.redis.hset(self.key, key, value)
+      pairs = self.values(stage).map do |key, _|
+        [key, self.presenter.attributes[key].serialise_value]
       end
+      SimpleORM.redis.hmset(self.key, *pairs.flatten)
     end
   end
 end
