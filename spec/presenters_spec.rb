@@ -3,31 +3,33 @@ require 'simple-orm/presenters'
 
 describe 'a presenter' do
   # Fixtures.
-  class UserPresenter < SimpleORM::Presenter
-    attribute(:id).required
-    attribute(:username).required
+  def userPresenter
+    Class.new(SimpleORM::Presenter) do
+      attribute(:id).required
+      attribute(:username).required
+    end
   end
 
   # Spec.
   describe '#validate' do
     it 'throws an error if whatever has been specified as required is missing' do
-      expect { UserPresenter.new.validate }.to raise_error(SimpleORM::ValidationError)
-      expect { UserPresenter.new(Hash.new).validate }.to raise_error(SimpleORM::ValidationError)
-      expect { UserPresenter.new(username: 'botanicus').validate }.to raise_error(SimpleORM::ValidationError)
+      expect { userPresenter.new.validate }.to raise_error(SimpleORM::ValidationError)
+      expect { userPresenter.new(Hash.new).validate }.to raise_error(SimpleORM::ValidationError)
+      expect { userPresenter.new(username: 'botanicus').validate }.to raise_error(SimpleORM::ValidationError)
     end
 
     it 'throws an error if there are any extra arguments' do
-      expect { UserPresenter.new(id: 1, username: 'botanicus', extra: 'x') }.to raise_error(ArgumentError)
+      expect { userPresenter.new(id: 1, username: 'botanicus', extra: 'x') }.to raise_error(ArgumentError)
     end
 
     it 'succeeds if just the right arguments have been provided' do
-      expect { UserPresenter.new(id: 1, username: 'botanicus') }.not_to raise_error
+      expect { userPresenter.new(id: 1, username: 'botanicus') }.not_to raise_error
     end
   end
 
   describe '#values' do
     it 'returns values as a hash' do
-      instance = UserPresenter.new(id: 1, username: 'botanicus')
+      instance = userPresenter.new(id: 1, username: 'botanicus')
       expect(instance.values[:id]).to eq(1)
       expect(instance.values[:username]).to eq('botanicus')
     end
@@ -35,7 +37,7 @@ describe 'a presenter' do
 
   describe 'accessors' do
     it 'provides getters for all the attributes' do
-      instance = UserPresenter.new(id: 1, username: 'botanicus')
+      instance = userPresenter.new(id: 1, username: 'botanicus')
       expect(instance.id).to eq(1)
       expect(instance.username).to eq('botanicus')
 
@@ -43,7 +45,7 @@ describe 'a presenter' do
     end
 
     it 'provides setters for all the public attributes' do
-      instance = UserPresenter.new(id: 1, username: 'botanicus')
+      instance = userPresenter.new(id: 1, username: 'botanicus')
 
       expect(instance.respond_to?(:username)).to be(true)
     end
@@ -51,7 +53,7 @@ describe 'a presenter' do
 
   describe '#to_json' do
     it 'deserialises #values to JSON' do
-      instance = UserPresenter.new(id: 1, username: 'botanicus')
+      instance = userPresenter.new(id: 1, username: 'botanicus')
       expect(instance.to_json).to eq('{"id":1,"username":"botanicus"}')
     end
   end

@@ -74,12 +74,12 @@ class SimpleORM
       @private
     end
 
-    def deserialise!
-      @deserialiser && self.set(@deserialiser.call(self.get))
+    def deserialise_value(raw_value)
+      @deserialiser ? @deserialiser.call(raw_value) : raw_value
     end
 
-    def serialise!
-      @serialiser && @serialiser.call(self.get)
+    def serialise_value
+      @serialiser ? @serialiser.call(self.get) : self.get
     end
 
     def run_hook(name)
@@ -98,9 +98,9 @@ class SimpleORM
       if stage.nil?
         @value ||= self.run_hook(:default)
       elsif stage == :create
-        @value ||= self.run_hook(:on_create)
+        @value ||= self.run_hook(:default) || self.run_hook(:on_create)
       elsif stage == :update
-        @value ||= self.run_hook(:on_update)
+        @value ||= self.run_hook(:default) || self.run_hook(:on_update)
       else
         raise ArgumentError.new("Attribute#get takes an optional argument which can be either :create or :update.")
       end
@@ -120,6 +120,12 @@ class SimpleORM
 
     def self.attribute(name, options = Hash.new)
       self.attributes[name] = Attribute.new(name)
+    end
+
+    def self.deserialise(raw_values)
+      self.attributes.reduce(Hash.new) do |values, (name, raw_value)|
+        values.merge(name.to_sym => self.attributes[name].deserialise_value(raw_value))
+      end
     end
 
     def initialize(values = Hash.new)

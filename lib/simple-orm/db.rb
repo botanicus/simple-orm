@@ -12,12 +12,16 @@ class SimpleORM
     end
 
     def self.get(key)
-      values = SimpleORM.redis.hgetall
+      raw_values = SimpleORM.redis.hgetall(key)
+      values = raw_values.reduce(Hash.new) do |values, (key, raw_value)|
+        values.merge(key.to_sym => begin
+          attribute = self.presenter.attributes[key.to_sym]
+          attribute.deserialise_value(raw_value)
+        end)
+      end
+
       self.new(values).tap do |instance|
         instance.is_new_record = false
-        instance.attributes.each do |_, attribute|
-          attribute.deserialise!
-        end
       end
     end
 
@@ -38,7 +42,8 @@ class SimpleORM
 
     def save
       stage = self.new_record? ? :create : :update
-      self.values(stage).each do |key, value|
+      self.values(stage).each do |key, _|
+        value = self.presenter.attributes[key].serialise_value
         SimpleORM.redis.hset(self.key, key, value)
       end
     end
