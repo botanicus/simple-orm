@@ -45,8 +45,8 @@ class SimpleORM
         self
       end
 
-      def type(type)
-        @type = type
+      def convert(&block)
+        @converter = block
         self
       end
 
