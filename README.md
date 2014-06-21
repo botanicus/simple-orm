@@ -7,7 +7,7 @@ require 'simple-orm'
 
 class PPT
   module Presenters
-    class User < Entity
+    class User < SipmpleORM::Presenter
       attribute(:service).required
       attribute(:username).required
       attribute(:name).required
@@ -27,7 +27,7 @@ class PPT
 
 
   module DB
-    class User < Entity
+    class User < SimpleORM::DB
       presenter PPT::Presenters::User
 
       def key

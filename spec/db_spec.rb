@@ -3,12 +3,12 @@ require 'simple-orm/db'
 
 describe SimpleORM::DB do
   # Fixtures.
-  class UserPresenter < SimpleORM::Presenters::Entity
+  class UserPresenter < SimpleORM::Presenter
     attribute(:id).required
     attribute(:username).required
   end
 
-  class User < SimpleORM::DB::Entity
+  class User < SimpleORM::DB
     presenter UserPresenter
   end
 
@@ -20,7 +20,7 @@ describe SimpleORM::DB do
     Time.stub(:now) { Time.at(1403347217) }
   end
 
-  describe SimpleORM::DB::Entity do
+  describe SimpleORM::DB do
     # TODO
   end
 end
