@@ -2,6 +2,17 @@ require 'spec_helper'
 require 'simple-orm/db'
 
 describe SimpleORM::DB do
+  # Fixtures.
+  class UserPresenter < SimpleORM::Presenters::Entity
+    attribute(:id).required
+    attribute(:username).required
+  end
+
+  class User < SimpleORM::DB::Entity
+    presenter UserPresenter
+  end
+
+  # Spec.
   let(:redis) { Redis.new(driver: :hiredis) }
 
   before(:each) do
@@ -10,12 +21,7 @@ describe SimpleORM::DB do
   end
 
   describe SimpleORM::DB::Entity do
-    let(:subclass) do
-      Class.new(described_class) do |klass|
-        attribute(:id).required
-        attribute(:username).required
-      end
-    end
+    # TODO
   end
 end
 
