@@ -14,6 +14,6 @@ Gem::Specification.new do |s|
 
   s.files             = ['README.md', *Dir.glob('**/*.rb')]
 
-  s.add_runtime_dependency('redis', '~> 3.1')
-  s.add_runtime_dependency('hiredis', '~> 0.5')
+  s.add_runtime_dependency('redis', '~> 3')
+  s.add_runtime_dependency('hiredis', '~> 0')
 end

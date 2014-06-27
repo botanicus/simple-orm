@@ -11,7 +11,13 @@ class SimpleORM
       @presenter ||= klass
     end
 
-    def self.get(key)
+    def self.get(key_or_values)
+      if key_or_values.respond_to?(:keys)
+        key = self.new(key_or_values).key
+      else
+        key = key_or_values
+      end
+
       raw_values = SimpleORM.redis.hgetall(key)
       return if raw_values.empty?
 
@@ -27,8 +33,22 @@ class SimpleORM
       end
     end
 
+    def self.create(values = Hash.new)
+      self.new(values).tap(&:save)
+    end
+
+    def self.update(values)
+      instance = self.get(values)
+
+      unless instance.values == values
+        instance.save
+      end
+
+      instance
+    end
+
     attr_reader :presenter
-    def initialize(values)
+    def initialize(values = Hash.new)
       @presenter = self.class.presenter.new(values)
       @is_new_record = true
     end
