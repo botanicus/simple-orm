@@ -7,8 +7,22 @@ class SimpleORM
   end
 
   class DB
-    def self.presenter(klass = nil)
+    def self.presenter(klass = nil, opts = Hash.new)
       @presenter ||= klass
+      @presenter_opts ||= opts
+      @presenter
+    end
+
+    def self.presenter_opts
+      @presenter_opts
+    end
+
+    def self.key(key = nil)
+      @key ||= key
+    end
+
+    def self.attributes_in_key
+      self.key.scan(/\{(\w+)\}/).flatten
     end
 
     def self.get(key_or_values)
@@ -62,11 +76,22 @@ class SimpleORM
       @presenter.values(stage)
     end
 
+    def omit_list
+      (self.class.attributes_in_key || Array.new) + (self.class.presenter_opts[:omit] || Array.new)
+    end
+
+    def key
+      self.class.attributes_in_key.reduce('') do |key, attribute_name|
+        key.sub("{#{attribute_name}}", self.presenter.send(attribute_name))
+      end
+    end
+
     def save
       stage = self.new_record? ? :create : :update
       pairs = self.values(stage).map do |key, _|
+        next if self.omit_list.include?(key)
         [key, self.presenter.attributes[key].serialise_value]
-      end
+      end.compact
       SimpleORM.redis.hmset(self.key, *pairs.flatten)
     end
   end
