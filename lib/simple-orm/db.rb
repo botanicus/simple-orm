@@ -77,11 +77,11 @@ class SimpleORM
     end
 
     def omit_list
-      (self.class.attributes_in_key || Array.new) + (self.class.presenter_opts[:omit] || Array.new)
+      ((self.class.attributes_in_key || Array.new) + (self.class.presenter_opts[:omit] || Array.new)).map(&:to_sym)
     end
 
     def key
-      self.class.attributes_in_key.reduce('') do |key, attribute_name|
+      self.class.attributes_in_key.reduce(self.class.key) do |key, attribute_name|
         key.sub("{#{attribute_name}}", self.presenter.send(attribute_name))
       end
     end
@@ -93,6 +93,22 @@ class SimpleORM
         [key, self.presenter.attributes[key].serialise_value]
       end.compact
       SimpleORM.redis.hmset(self.key, *pairs.flatten)
+    end
+
+    def inspect
+      "#<#{self.class}:#{self.object_id} key=#{self.key.inspect} values=#{self.values.inspect}>"
+    end
+
+    def respond_to_missing?(name, *args)
+      @presenter.respond_to?(name, *args) || super(name, *args)
+    end
+
+    def method_missing(name, *args, &block)
+      if @presenter.respond_to?(name)
+        @presenter.send(name, *args, &block)
+      else
+        super(name, *args, &block)
+      end
     end
   end
 end
