@@ -7,6 +7,10 @@ describe 'a presenter' do
     Class.new(SimpleORM::Presenter) do
       attribute(:id).required
       attribute(:username).required
+
+      namespace(:pt) do
+        attribute(:auth_key)
+      end
     end
   end
 
@@ -41,13 +45,34 @@ describe 'a presenter' do
       expect(instance.id).to eq(1)
       expect(instance.username).to eq('botanicus')
 
-      expect(instance.respond_to?(:username)).to be(true)
+      expect(instance).to respond_to(:username)
+
+      expect(instance.username).to eq('botanicus')
     end
 
     it 'provides setters for all the public attributes' do
       instance = userPresenter.new(id: 1, username: 'botanicus')
 
-      expect(instance.respond_to?(:username)).to be(true)
+      expect(instance).to respond_to(:username=)
+
+      instance.username = 'john'
+      expect(instance.username).to eq('john')
+    end
+
+    it 'provides getters for all the namespaces' do
+      instance = userPresenter.new(id: 1, username: 'botanicus')
+
+      expect(instance).to respond_to(:pt)
+    end
+  end
+
+  # TODO: update db_spec.rb as well.
+  describe 'namespaces' do
+    it 'makes them available in top-level instance #values'
+
+    describe 'accessors' do
+      it 'provides getters for all the attributes'
+      it 'provides setters for all the public attributes'
     end
   end
 
