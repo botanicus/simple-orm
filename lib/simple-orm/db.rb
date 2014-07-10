@@ -82,7 +82,7 @@ class SimpleORM
 
     def key
       self.class.attributes_in_key.reduce(self.class.key) do |key, attribute_name|
-        key.sub("{#{attribute_name}}", self.presenter.send(attribute_name))
+        key.sub("{#{attribute_name}}", self.presenter.send(attribute_name).to_s)
       end
     end
 
@@ -96,7 +96,12 @@ class SimpleORM
     end
 
     def inspect
-      "#<#{self.class}:#{self.object_id} key=#{self.key.inspect} values=#{self.values.inspect}>"
+      header = "#{self.class}:#{self.object_id}"
+      values = self.values.reduce(Array.new) do |array, (key, value)|
+        array << "#{key}: #{value.inspect}"
+      end
+
+      "#<#{header} key=#{self.key} values={#{values.join(", ")}}>"
     end
 
     def respond_to_missing?(name, *args)
