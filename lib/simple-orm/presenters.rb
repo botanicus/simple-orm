@@ -117,8 +117,15 @@ class SimpleORM
       self
     end
 
+    # attribute(:auth_key).private.default { SecureRandom.hex }
     def default(value = nil, &block)
       @hooks[:default] = value ? Proc.new { value } : block
+      self
+    end
+
+    # attribute(:accounting_email).value { self.email }
+    def value(value = nil, &block)
+      @default_value_block = value ? Proc.new { value } : block
       self
     end
 
@@ -168,6 +175,8 @@ class SimpleORM
         @value ||= self.run_hook(:default) || self.run_hook(:on_create)
       elsif stage == :update
         @value ||= self.run_hook(:default) || self.run_hook(:on_update)
+      elsif @default_value_block
+        @instance.instance_eval(&@default_value_block)
       else
         raise ArgumentError.new("Attribute#get takes an optional argument which can be either :create or :update.")
       end
