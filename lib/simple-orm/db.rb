@@ -17,8 +17,8 @@ class SimpleORM
       @presenter_opts
     end
 
-    def self.key(key = nil)
-      @key ||= key
+    def self.key(key_pattern = nil)
+      @key ||= key_pattern
     end
 
     def self.attributes_in_key
@@ -54,7 +54,9 @@ class SimpleORM
     def self.update(values)
       instance = self.get(values)
 
-      unless instance.values == values
+      if instance.nil?
+        self.create(values)
+      elsif instance.values != values
         instance.save
       end
 
@@ -101,7 +103,7 @@ class SimpleORM
         array << "#{key}: #{value.inspect}"
       end
 
-      "#<#{header} key=#{self.key} values={#{values.join(", ")}}>"
+      "#<#{header} key=#{self.key} values={#{values.join(', ')}}>"
     end
 
     def respond_to_missing?(name, *args)
