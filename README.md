@@ -2,6 +2,20 @@
 
 Simple ORM. It uses Redis hashes. Supports validations, default values, setting values on create/update and data types (Redis stores every value as a string).
 
+## Limitations
+
+### Lists & Sets
+
+Currently only hashes are supported. If you need an array, just use serialise/deserialise hooks and save it as JSON.
+
+Why? Atomicity, keepin' it simple and not having to chase data all around redis. One key rules 'em all.
+
+### Every Operation Is Attribute-Bound
+
+So for instance you don't have `User#on_update`, but rather `User#updated_at#on_update`.
+
+Why? It's easier and I'm a lazy motherfucker.
+
 ```ruby
 require 'simple-orm'
 
@@ -33,10 +47,7 @@ class PPT
   module DB
     class User < SimpleORM::DB
       presenter PPT::Presenters::User
-
-      def key
-        "users.#{self.username}"
-      end
+      key 'users.{username}'
     end
   end
 end
