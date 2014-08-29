@@ -26,10 +26,12 @@ class SimpleORM
     end
 
     def self.get(key_or_values)
-      if key_or_values.respond_to?(:keys)
-        key = self.new(key_or_values).key
+      key = if key_or_values.respond_to?(:keys)
+        key_or_values.reduce(self.key.dup) do |model_key, (key, value)|
+          model_key.sub(/\{#{key}\}/, value)
+        end
       else
-        key = key_or_values
+        key_or_values
       end
 
       raw_values = SimpleORM.redis.hgetall(key)
@@ -44,6 +46,12 @@ class SimpleORM
 
       self.new(values).tap do |instance|
         instance.is_new_record = false
+      end
+    end
+
+    def self.get!(*args)
+      unless self.get(*args)
+        raise "Not found: #{args.inspect}"
       end
     end
 
