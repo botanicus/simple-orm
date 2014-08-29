@@ -25,6 +25,14 @@ class SimpleORM
       self.key.scan(/\{(\w+)\}/).flatten
     end
 
+    # Retrieving data using key:
+    # Story.get('stories.ppt.1020')
+    #
+    # Retrieving data using hash values:
+    # Story.get(company: 'ppt', id: 1020)
+
+    # The latter method is recommended as
+    # it's less prone to changes in the key.
     def self.get(key_or_values)
       key = if key_or_values.respond_to?(:keys)
         key_or_values.reduce(self.key.dup) do |model_key, (key, value)|
