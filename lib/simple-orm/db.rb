@@ -1,3 +1,5 @@
+require 'ostruct'
+
 require 'redis'
 require 'simple-orm/presenters'
 
@@ -47,7 +49,18 @@ class SimpleORM
 
       values = raw_values.reduce(Hash.new) do |values, (key, raw_value)|
         values.merge(key.to_sym => begin
-          attribute = self.presenter.attributes[key.to_sym]
+          # This is because of the dot notation.
+          # So for instance if the key is 'users.{company.service.id}',
+          # we have to call <user>.company, on that <company>.service
+          # and on that <service>.id.
+          #
+          # OpenStruct is used because attributes are a hash,
+          # but latter objects have method_missing for accessing
+          # their attributes.
+          object = OpenStruct.new(self.presenter.attributes)
+          attribute = key.split('.').reduce(object) do |last_object, fragment|
+            last_object.send(fragment)
+          end
           attribute.deserialise_value(raw_value)
         end)
       end
